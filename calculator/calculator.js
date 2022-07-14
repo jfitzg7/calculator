@@ -28,9 +28,11 @@ function updateDisplay() {
 }
 
 let expressionStr = "0";
+let currentOperand = "0";
 
 function resetExpressionStr() {
   expressionStr = "0";
+  currentOperand = "0";
 }
 
 // Operator mode is set to true when an operator has been selected,
@@ -47,13 +49,17 @@ clearBtn.addEventListener("click", () => {
 const operandButtons = document.querySelectorAll(".operand-button");
 operandButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    if (expressionStr === "0") {
-      expressionStr = `${button.textContent}`;
+    if (currentOperand === "0") {
+      currentOperand = `${button.textContent}`;
+      expressionStr = `${expressionStr.slice(0, -1)}${button.textContent}`;
+      currentOperand = `${button.textContent}`;
       updateDisplay();
     } else if (!operatorMode) {
+      currentOperand = `${currentOperand}${button.textContent}`;
       expressionStr = `${expressionStr}${button.textContent}`;
       updateDisplay();
     } else if (operatorMode) {
+      currentOperand = `${currentOperand}${button.textContent}`;
       expressionStr = `${expressionStr} ${button.textContent}`;
       operatorMode = false;
       updateDisplay();
@@ -69,6 +75,7 @@ operatorButtons.forEach((button) => {
       updateDisplay();
     } else if (!operatorMode) {
       expressionStr = `${expressionStr} ${button.textContent}`;
+      currentOperand = "";
       operatorMode = true;
       updateDisplay();
     }
