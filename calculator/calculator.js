@@ -21,10 +21,56 @@ function operate(operator, operand1, operand2) {
   else if (operator === "/") return divide(operand1, operand2);
 }
 
-function clearDisplay() {
-  const display = document.querySelector("#calculator-display");
-  display.textContent = "";
+const display = document.querySelector("#calculator-display");
+
+function updateDisplay() {
+  display.textContent = expressionStr;
 }
 
+let expressionStr = "0";
+
+function resetExpressionStr() {
+  expressionStr = "0";
+}
+
+// Operator mode is set to true when an operator has been selected,
+// and then set to false when a number is selected or the clear button is pressed.
+let operatorMode = false;
+
 const clearBtn = document.querySelector("#pad-clear");
-clearBtn.addEventListener("click", clearDisplay);
+clearBtn.addEventListener("click", () => {
+  operatorMode = false;
+  resetExpressionStr();
+  updateDisplay();
+});
+
+const operandButtons = document.querySelectorAll(".operand-button");
+operandButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (expressionStr === "0") {
+      expressionStr = `${button.textContent}`;
+      updateDisplay();
+    } else if (!operatorMode) {
+      expressionStr = `${expressionStr}${button.textContent}`;
+      updateDisplay();
+    } else if (operatorMode) {
+      expressionStr = `${expressionStr} ${button.textContent}`;
+      operatorMode = false;
+      updateDisplay();
+    }
+  });
+});
+
+const operatorButtons = document.querySelectorAll(".operator-button");
+operatorButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (operatorMode) {
+      expressionStr = `${expressionStr.slice(0, -1)}${button.textContent}`;
+      updateDisplay();
+    } else if (!operatorMode) {
+      expressionStr = `${expressionStr} ${button.textContent}`;
+      operatorMode = true;
+      updateDisplay();
+    }
+  });
+});
