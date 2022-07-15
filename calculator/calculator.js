@@ -1,5 +1,5 @@
 function add(a, b) {
-  return a + b;
+  return +a + +b;
 }
 
 function subtract(a, b) {
@@ -14,23 +14,27 @@ function divide(a, b) {
   return a / b;
 }
 
-function operate(operator, operand1, operand2) {
-  if (operator === "+") return add(operand1, operand2);
-  else if (operator === "-") return subtract(operand1, operand2);
-  else if (operator === "*") return multiply(operand1, operand2);
-  else if (operator === "/") return divide(operand1, operand2);
+function operate(operator, leftOperand, rightOperand) {
+  if (operator === "+") return add(leftOperand, rightOperand);
+  else if (operator === "-") return subtract(leftOperand, rightOperand);
+  else if (operator === "*") return multiply(leftOperand, rightOperand);
+  else if (operator === "/") return divide(leftOperand, rightOperand);
 }
 
 const display = document.querySelector("#calculator-display");
 
-function updateDisplay() {
-  display.textContent = expressionStr;
+function updateDisplay(displayValue) {
+  display.textContent = displayValue;
+}
+
+function displayErrorMessage() {
+  updateDisplay("ERROR");
 }
 
 let expressionStr = "0";
 let currentOperand = "0";
 
-function resetExpressionStr() {
+function resetExpression() {
   expressionStr = "0";
   currentOperand = "0";
 }
@@ -42,8 +46,8 @@ let operatorMode = false;
 const clearBtn = document.querySelector("#pad-clear");
 clearBtn.addEventListener("click", () => {
   operatorMode = false;
-  resetExpressionStr();
-  updateDisplay();
+  resetExpression();
+  updateDisplay(expressionStr);
 });
 
 const operandButtons = document.querySelectorAll(".operand-button");
@@ -53,16 +57,16 @@ operandButtons.forEach((button) => {
       currentOperand = `${button.textContent}`;
       expressionStr = `${expressionStr.slice(0, -1)}${button.textContent}`;
       currentOperand = `${button.textContent}`;
-      updateDisplay();
+      updateDisplay(expressionStr);
     } else if (!operatorMode) {
       currentOperand = `${currentOperand}${button.textContent}`;
       expressionStr = `${expressionStr}${button.textContent}`;
-      updateDisplay();
+      updateDisplay(expressionStr);
     } else if (operatorMode) {
       currentOperand = `${currentOperand}${button.textContent}`;
       expressionStr = `${expressionStr} ${button.textContent}`;
       operatorMode = false;
-      updateDisplay();
+      updateDisplay(expressionStr);
     }
   });
 });
@@ -72,12 +76,38 @@ operatorButtons.forEach((button) => {
   button.addEventListener("click", () => {
     if (operatorMode) {
       expressionStr = `${expressionStr.slice(0, -1)}${button.textContent}`;
-      updateDisplay();
+      updateDisplay(expressionStr);
     } else if (!operatorMode) {
       expressionStr = `${expressionStr} ${button.textContent}`;
       currentOperand = "";
       operatorMode = true;
-      updateDisplay();
+      updateDisplay(expressionStr);
     }
   });
+});
+
+const equalsBtn = document.querySelector("#pad-equals");
+equalsBtn.addEventListener("click", () => {
+  const expressionArray = expressionStr.split(" ");
+  if (expressionArray.length === 1 || expressionArray.length % 2 === 0) {
+    return; //do nothing
+  }
+  leftOperand = expressionArray[0];
+  for (let i = 1; i < expressionArray.length; i += 2) {
+    operator = expressionArray[i];
+    rightOperand = expressionArray[i + 1];
+    const regex = /[\+\-\*\/]/g;
+    if (
+      isNaN(rightOperand) ||
+      !operator.match(regex) ||
+      (operator === "/" && rightOperand == 0)
+    ) {
+      resetExpression();
+      displayErrorMessage();
+      return;
+    }
+    leftOperand = operate(operator, leftOperand, rightOperand);
+  }
+  expressionStr = `${leftOperand}`;
+  updateDisplay(expressionStr);
 });
