@@ -58,6 +58,18 @@ clearEntryBtn.addEventListener("click", () => {
   displayExpression();
 });
 
+const decimalBtn = document.querySelector("#pad-decimal");
+decimalBtn.addEventListener("click", () => {
+  if (expressionArray.length % 2 == 1 && expressionArray.length > 0) {
+    currentOperand = expressionArray.pop();
+    if (!currentOperand.includes(".")) {
+      currentOperand = currentOperand.concat(".");
+    }
+    expressionArray.push(currentOperand);
+    displayExpression();
+  }
+});
+
 const operandButtons = document.querySelectorAll(".operand-button");
 operandButtons.forEach((button) => {
   button.addEventListener("click", () => {
