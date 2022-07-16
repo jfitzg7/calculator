@@ -3,11 +3,13 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 main {
   width: 50vmin;
-  height: 60vmin;
+  height: 40vmin;
   display: flex;
   flex-direction: column;
 }
@@ -18,19 +20,21 @@ main {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 2%;
+  gap: 3%;
 }
 
 button,
 .fake-button {
-  width: 23%;
-  height: 18%;
+  width: 22%;
+  height: 17%;
   box-sizing: border-box;
 }
 
-#calculator-display {
+#display-section {
   font-size: 2em;
   text-align: right;
   padding: 10px;
   box-sizing: border-box;
+  overflow: scroll;
+  white-space: nowrap;
 }
