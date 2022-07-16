@@ -31,64 +31,58 @@ function displayErrorMessage() {
   updateDisplay("ERROR");
 }
 
-let expressionStr = "0";
-let currentOperand = "0";
+let expressionArray = ["0"];
 
-function resetExpression() {
-  expressionStr = "0";
-  currentOperand = "0";
+function displayExpression() {
+  updateDisplay(expressionArray.join(" "));
 }
 
-// Operator mode is set to true when an operator has been selected,
-// and then set to false when a number is selected or the clear button is pressed.
-let operatorMode = false;
+function resetExpressionArray(initialValue) {
+  expressionArray = [initialValue];
+}
 
 const clearBtn = document.querySelector("#pad-clear");
 clearBtn.addEventListener("click", () => {
-  operatorMode = false;
-  resetExpression();
-  updateDisplay(expressionStr);
+  resetExpressionArray("0");
+  displayExpression();
 });
 
 const operandButtons = document.querySelectorAll(".operand-button");
 operandButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    if (currentOperand === "0") {
-      currentOperand = `${button.textContent}`;
-      expressionStr = `${expressionStr.slice(0, -1)}${button.textContent}`;
-      currentOperand = `${button.textContent}`;
-      updateDisplay(expressionStr);
-    } else if (!operatorMode) {
-      currentOperand = `${currentOperand}${button.textContent}`;
-      expressionStr = `${expressionStr}${button.textContent}`;
-      updateDisplay(expressionStr);
-    } else if (operatorMode) {
-      currentOperand = `${currentOperand}${button.textContent}`;
-      expressionStr = `${expressionStr} ${button.textContent}`;
-      operatorMode = false;
-      updateDisplay(expressionStr);
+    if (expressionArray.length % 2 == 0 && expressionArray.length > 0) {
+      expressionArray.push(`${button.textContent}`);
+    } else {
+      currentOperand = expressionArray[expressionArray.length - 1];
+      if (currentOperand === "0") {
+        expressionArray[expressionArray.length - 1] = `${button.textContent}`;
+      } else {
+        expressionArray[
+          expressionArray.length - 1
+        ] = `${currentOperand}${button.textContent}`;
+      }
     }
+    displayExpression();
   });
 });
 
 const operatorButtons = document.querySelectorAll(".operator-button");
 operatorButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    if (operatorMode) {
-      expressionStr = `${expressionStr.slice(0, -1)}${button.textContent}`;
-      updateDisplay(expressionStr);
-    } else if (!operatorMode) {
-      expressionStr = `${expressionStr} ${button.textContent}`;
-      currentOperand = "";
-      operatorMode = true;
-      updateDisplay(expressionStr);
+    if (expressionArray.length < 1) {
+      return; // do nothing
     }
+    if (expressionArray.length % 2 == 0) {
+      expressionArray[expressionArray.length - 1] = `${button.textContent}`;
+    } else {
+      expressionArray.push(`${button.textContent}`);
+    }
+    displayExpression();
   });
 });
 
 const equalsBtn = document.querySelector("#pad-equals");
 equalsBtn.addEventListener("click", () => {
-  const expressionArray = expressionStr.split(" ");
   if (expressionArray.length === 1 || expressionArray.length % 2 === 0) {
     return; //do nothing
   }
@@ -102,12 +96,12 @@ equalsBtn.addEventListener("click", () => {
       !operator.match(regex) ||
       (operator === "/" && rightOperand == 0)
     ) {
-      resetExpression();
+      resetExpressionArray("0");
       displayErrorMessage();
       return;
     }
-    leftOperand = operate(operator, leftOperand, rightOperand);
+    leftOperand = `${operate(operator, leftOperand, rightOperand)}`;
   }
-  expressionStr = `${leftOperand}`;
-  updateDisplay(expressionStr);
+  resetExpressionArray(leftOperand);
+  displayExpression();
 });
