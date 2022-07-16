@@ -41,9 +41,20 @@ function resetExpressionArray(initialValue) {
   expressionArray = [initialValue];
 }
 
-const clearBtn = document.querySelector("#pad-clear");
-clearBtn.addEventListener("click", () => {
+const allClearBtn = document.querySelector("#pad-allclear");
+allClearBtn.addEventListener("click", () => {
   resetExpressionArray("0");
+  displayExpression();
+});
+
+const clearEntryBtn = document.querySelector("#pad-clearentry");
+clearEntryBtn.addEventListener("click", () => {
+  currentExpressionToken = expressionArray.pop().slice(0, -1);
+  if (currentExpressionToken === "" && expressionArray.length == 0) {
+    resetExpressionArray("0");
+  } else if (currentExpressionToken !== "") {
+    expressionArray.push(currentExpressionToken);
+  }
   displayExpression();
 });
 
